@@ -67,6 +67,13 @@ def extract_text_from_bytes(file_bytes: bytes, file_type: str) -> str:
     if not file_bytes:
         return ""
     text = ""
+    # Check file size limit before processing (10MB max to prevent OOM)
+    max_size = 10 * 1024 * 1024  # 10MB
+    file_size = getattr(uploaded_file, "size", 0)
+    if file_size > max_size:
+        logger.warning(f"PDF file size {file_size/1024/1024:.1f}MB exceeds 10MB limit")
+        st.warning("PDF file too large. Please upload a PDF under 10MB.")
+        return ""
     file_type_lower = (file_type or "").lower()
 
     if "pdf" in file_type_lower:
@@ -112,6 +119,13 @@ def extract_text_from_file(uploaded_file: BinaryIO) -> str:
         return ""
 
     text = ""
+    # Check file size limit before processing (10MB max to prevent OOM)
+    max_size = 10 * 1024 * 1024  # 10MB
+    file_size = getattr(uploaded_file, "size", 0)
+    if file_size > max_size:
+        logger.warning(f"PDF file size {file_size/1024/1024:.1f}MB exceeds 10MB limit")
+        st.warning("PDF file too large. Please upload a PDF under 10MB.")
+        return ""
     file_type = getattr(uploaded_file, "type", "")
 
     if "pdf" in file_type:
